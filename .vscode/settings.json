@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "C:\\Users\\frede\\OneDrive\\Documents\\Concordia\\Honours project\\RL_code\\chapter4",
+        "./2048-python"
+    ]
+}
