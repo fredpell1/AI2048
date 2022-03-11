@@ -1,6 +1,7 @@
 
 
 from time import sleep, time
+import random
 import tkinter
 import neat
 import pickle 
@@ -18,11 +19,13 @@ import logic, puzzle, constants
 game = puzzle.GameGrid()
 
 def eval_genomes(genomes, config):
-    #game = puzzle.GameGrid()
+    
 
     for genome_id, genome in genomes:
         genome.fitness = 0
         net = neat.nn.FeedForwardNetwork.create(genome, config)
+        genome.fitness += play_game(game, net)
+        game.reset()
         genome.fitness += play_game(game, net)
         game.reset()
 
@@ -31,7 +34,7 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
     
     running = True
     fitness = 0
-    
+    move_history = []
     num_move = 0
     while running:
         
@@ -48,7 +51,7 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
 
             if num_move > max_move: running = False
 
-            fitness += (score - old_score)/10 if score != old_score else -1
+            fitness += (score - old_score)/10 if score != old_score else -100
                 
             if net is not None:
                 num_move += 1
@@ -57,7 +60,15 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
                 output = net.activate(flatten_grid)
                 
                 move = output.index(max(output))
+
+                move_history.append(move)
+                if len(move_history) > 10:
+                    move_history.pop(0)
                 
+                if all(move == x for x in move_history):
+                    move = random.randint(0,3)
+                    
+
                 if move == 0:
                     game.process_input(constants.KEY_UP)
                 elif move ==1:
@@ -90,12 +101,12 @@ def test_ai(config_file):
 
 
 
-def train_ai(config_file):
+def train_ai(config_file, checkpoint = '0'):
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_file)
-    pop = neat.Population(config)
-
+    
+    pop = neat.Population(config) if checkpoint == '0' else neat.Checkpointer.restore_checkpoint('neat-checkpoint-' + checkpoint) 
     #Add a stdout reporter to show progress in the terminal
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
@@ -109,12 +120,14 @@ def train_ai(config_file):
     with open("best.pickle", "wb") as f:
         pickle.dump(winner, f)
 
+    
+
 if __name__ == "__main__":
     
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config.txt')
-    test_ai(config_path)
-            
+    #train_ai(config_path, checkpoint='99')
+    test_ai(config_path)       
 
 
 
