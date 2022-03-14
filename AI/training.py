@@ -28,6 +28,7 @@ def eval_genomes(genomes, config):
         game.reset()
         genome.fitness += play_game(game, net)
         game.reset()
+        genome.fitness /= 2 #taking the average of the two games
 
 
 def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = False):
@@ -51,7 +52,7 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
 
             if num_move > max_move: running = False
 
-            fitness += (score - old_score)/10 if score != old_score else -100
+            fitness += (score - old_score) if score != old_score else -100
                 
             if net is not None:
                 num_move += 1
@@ -111,7 +112,7 @@ def train_ai(config_file, checkpoint = '0'):
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
-    pop.add_reporter(neat.Checkpointer(generation_interval = 50))
+    pop.add_reporter(neat.Checkpointer(generation_interval = 25))
 
 
     winner = pop.run(eval_genomes, 100)
@@ -126,7 +127,7 @@ if __name__ == "__main__":
     
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config.txt')
-    #train_ai(config_path, checkpoint='99')
+    #train_ai(config_path, '114')
     test_ai(config_path)       
 
 
