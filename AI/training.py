@@ -91,7 +91,7 @@ def test_ai(config_file):
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                         neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
 
-    with open("best.pickle", "rb") as f:
+    with open("winner.pickle", "rb") as f:
         best = pickle.load(f)
 
 
