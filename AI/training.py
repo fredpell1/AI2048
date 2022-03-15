@@ -107,12 +107,12 @@ def train_ai(config_file, checkpoint = '0'):
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_file)
     
-    pop = neat.Population(config) if checkpoint == '0' else neat.Checkpointer.restore_checkpoint('neat-checkpoint-' + checkpoint) 
+    pop = neat.Population(config) if checkpoint == '0' else neat.Checkpointer.restore_checkpoint('checkpoints/neat-checkpoint-' + checkpoint) 
     #Add a stdout reporter to show progress in the terminal
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
-    pop.add_reporter(neat.Checkpointer(generation_interval = 25))
+    pop.add_reporter(neat.Checkpointer(generation_interval = 25, filename_prefix='checkpoints/neat-checkpoint-'))
 
 
     winner = pop.run(eval_genomes, 100)
