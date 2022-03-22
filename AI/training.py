@@ -1,4 +1,4 @@
-
+"""All the functions to train the model sequentially, test it or play the game"""
 
 from time import sleep, time
 import random
@@ -19,7 +19,7 @@ import logic, puzzle, constants
 game = puzzle.GameGrid()
 
 def eval_genomes(genomes, config):
-    
+    """Evaluate the genomes by making each of them play 2 games per generation and setting the fitness to the average of the games"""
 
     for genome_id, genome in genomes:
         genome.fitness = 0
@@ -32,10 +32,10 @@ def eval_genomes(genomes, config):
 
 
 def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = False):
-    
+    """Play one game of 2048 with the neural net as the player"""
     running = True
     fitness = 0
-    move_history = []
+    score_history = []
     num_move = 0
     while running:
         
@@ -53,7 +53,7 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
             if num_move > max_move: running = False
 
             fitness += (score - old_score) if score != old_score else -100
-                
+            score_history.append(score - old_score)
             if net is not None:
                 num_move += 1
                 flatten_grid = [element for row in game.matrix for element in row]
@@ -62,13 +62,15 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
                 
                 move = output.index(max(output))
 
-                move_history.append(move)
-                if len(move_history) > 10:
-                    move_history.pop(0)
                 
-                if all(move == x for x in move_history):
+             
+
+                if len(score_history) > 10:
+                    score_history.pop(0)
+
+                #do a random move if the AI is stuck in making a move that doesn't modify the board
+                if all(x == 0 for x in score_history) and len(score_history) == 10:
                     move = random.randint(0,3)
-                    
 
                 if move == 0:
                     game.process_input(constants.KEY_UP)
@@ -88,10 +90,11 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
 
 
 def test_ai(config_file):
+    """Test the best AI trained so far"""
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                         neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
 
-    with open("winner.pickle", "rb") as f:
+    with open("winner2.pickle", "rb") as f:
         best = pickle.load(f)
 
 
@@ -102,7 +105,8 @@ def test_ai(config_file):
 
 
 
-def train_ai(config_file, checkpoint = '0'):
+def train_ai(config_file, checkpoint = '0', generations = 100):
+    """Train the population from checkpoint during the given number of generations"""
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_file)
@@ -115,7 +119,7 @@ def train_ai(config_file, checkpoint = '0'):
     pop.add_reporter(neat.Checkpointer(generation_interval = 25, filename_prefix='checkpoints/neat-checkpoint-'))
 
 
-    winner = pop.run(eval_genomes, 100)
+    winner = pop.run(eval_genomes, generations)
 
     #saving the best AI
     with open("best.pickle", "wb") as f:
