@@ -1,5 +1,7 @@
 # AI2048
 
+I am currently refactoring the code to make it more modular, slightly more object oriented, to better parameterize different reward functions that will be implemented. 
+
 UI for the game was taken [there](https://github.com/yangshun/2048-python) and I refactored parts of the code to adapt it to an AI playing the game. 
 However, since the project was read-only, when I pushed my changes it broke the link of the git submodule. 
 
