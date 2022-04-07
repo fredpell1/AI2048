@@ -1,54 +1,48 @@
 """Functions to train the AI in parallel by using multiprocessing"""
 
+
 import pickle
 import tkinter
 import multiprocessing
 import os
 import neat
-import training
+import sequentialtraining
 
 def eval_genome(genome, config):
     """Evaluate one genome by making it play 3 games and setting its fitness to the average of the games"""
     net = neat.nn.FeedForwardNetwork.create(genome, config)
-    game = training.game
+    game = sequentialtraining.puzzle.GameGrid()
 
     fitness = 0
     for i in range(3):
         game.reset()
-        fitness += training.play_game(game, net)
+        fitness += sequentialtraining.play_game(game, net)
 
     return fitness / 3
 
 
-def run(config_file, checkpoint='0', generations=40):
+def train(config_file, checkpoint='0', generations=40, processors = multiprocessing.cpu_count(), folder = 'checkpoints',
+        winner_file = 'best.pickle', eval_function = eval_genome, generation_interval=10):
     """Train the AI from checkpoint to the number of generations given"""
+
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                         neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
 
-    pop = neat.Population(config) if checkpoint == '0' else neat.Checkpointer.restore_checkpoint('checkpoints2/neat-checkpoint-' + checkpoint)
+    pop = neat.Population(config) if checkpoint == '0' else neat.Checkpointer.restore_checkpoint(folder+'/neat-checkpoint-' + checkpoint)
 
 
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
-    pop.add_reporter(neat.Checkpointer(generation_interval = 1, filename_prefix='checkpoints2/neat-checkpoint-'))
+    pop.add_reporter(neat.Checkpointer(generation_interval = generation_interval, filename_prefix=folder+'/neat-checkpoint-'))
 
-    #will train 8 genomes in parallel
-    pe = neat.ParallelEvaluator(multiprocessing.cpu_count(), eval_genome)
+    #will train genomes in parallel
+    pe = neat.ParallelEvaluator(processors, eval_function)
 
     winner = pop.run(pe.evaluate, generations)
 
     #saving the best AI
 
-    with open("winner2.pickle", "wb") as f:
+    with open(winner_file, "wb") as f:
         pickle.dump(winner, f)
 
-
-
-if __name__ == '__main__':
-
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config.txt')
-
-    run(config_path, checkpoint='90')
-    
