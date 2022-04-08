@@ -2,21 +2,28 @@
 
 
 import pickle
-import tkinter
 import multiprocessing
-import os
 import neat
-import sequentialtraining
+from pathlib import Path
+import sys
+import fitness_function
+#this is a bad way to do this, I should fix it later
+PARENTPATH = str(Path(__file__).parent.parent)
+sys.path.append(PARENTPATH + "/2048-python")
+####################################################
+
+import logic, puzzle, constants
+
 
 def eval_genome(genome, config):
     """Evaluate one genome by making it play 3 games and setting its fitness to the average of the games"""
     net = neat.nn.FeedForwardNetwork.create(genome, config)
-    game = sequentialtraining.puzzle.GameGrid()
+    game = fitness_function.puzzle.GameGrid()
 
     fitness = 0
     for i in range(3):
         game.reset()
-        fitness += sequentialtraining.play_game(game, net)
+        fitness += fitness_function.play_game(game, net)
 
     return fitness / 3
 
