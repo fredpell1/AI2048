@@ -15,10 +15,22 @@ sys.path.append(PARENTPATH + "/2048-python")
 import logic, puzzle, constants
 
 
-def eval_genome(genome, config):
-    """Evaluate one genome by making it play 3 games and setting its fitness to the average of the games"""
+def eval_genome_increasing_greedy(genome, config):
     net = neat.nn.FeedForwardNetwork.create(genome, config)
-    game = fitness_function.puzzle.GameGrid()
+    game = puzzle.GameGrid()
+
+    return fitness_function.play_game(game, net, reward_function=fitness_function.increasing_row_col_greedy_fitness)
+    
+
+
+
+
+def eval_genome_greedy(genome, config):
+    """Evaluate one genome by making it play 3 games and setting its fitness to the average of the games, using the
+        greedy reward function
+    """
+    net = neat.nn.FeedForwardNetwork.create(genome, config)
+    game = puzzle.GameGrid()
 
     fitness = 0
     for i in range(3):
@@ -29,7 +41,7 @@ def eval_genome(genome, config):
 
 
 def train(config_file, checkpoint='0', generations=40, processors = multiprocessing.cpu_count(), folder = 'checkpoints',
-        winner_file = 'best.pickle', eval_function = eval_genome, generation_interval=10):
+        winner_file = 'best.pickle', eval_function = eval_genome_greedy, generation_interval=10):
     """Train the AI from checkpoint to the number of generations given"""
 
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,

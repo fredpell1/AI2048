@@ -1,6 +1,7 @@
 from time import sleep
 import tkinter
 import sys
+import numpy as np
 from pathlib import Path
 #this is a bad way to do this, I should fix it later
 PARENTPATH = str(Path(__file__).parent.parent)
@@ -10,12 +11,40 @@ import logic, puzzle, constants
 import random
 
 
-def normalize_max(flatten_grid):
+def __normalize_max(flatten_grid):
     max_value = max(flatten_grid)
     return [i / max_value for i in flatten_grid]
 
 def greedy_fitness(score, old_score, matrix):
     return score - old_score if score != old_score else -1
+
+def increasing_row_fitness(score, old_score, matrix):
+    fitness = 0
+    best = lambda row : row[0] == row[1] and row[2] == row[3] and 2 * row[0] == row[3]
+    second_best = lambda row: row[0] == row[1] and row[2] == row[3] and row[0] == row[3]
+    last = lambda row: row[0] == row[1] or row[1] == row[2] or row[2] == row[3]
+    for row in matrix: 
+        if best(row) or best(row[::-1]):
+            fitness += 10
+        elif second_best(row) or second_best(row[::-1]):
+            fitness += 5
+        elif last(row) or last(row[::-1]):
+            fitness += 2.5
+
+    return fitness
+
+
+def increasing_col_fitness(score, old_score, matrix):
+    transposed = np.array(matrix).T
+    return increasing_row_fitness(score, old_score, transposed)
+        
+
+def increasing_row_col_greedy_fitness(score, old_score, matrix):
+    fitness = 0
+    fitness += greedy_fitness(score, old_score, matrix)
+    fitness += increasing_row_fitness(score, old_score, matrix)
+    fitness += increasing_col_fitness(score, old_score, matrix)
+    return fitness
 
 
 
@@ -34,18 +63,15 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
             if net is not None:
                 
                 
-                flatten_grid = normalize_max([element for row in game.matrix for element in row]) \
+                flatten_grid = __normalize_max([element for row in game.matrix for element in row]) \
                     if normalize else \
                     [element for row in game.matrix for element in row]
-                print(flatten_grid)
+            
                 output = net.activate(flatten_grid)
                 
                 move = output.index(max(output))
 
-                
-                if len(score_history) > 10:
-                    score_history.pop(0)
-                
+
                 #do a random move if the AI is stuck in making a move that doesn't modify the board
                 if all(x == 0 for x in score_history) and len(score_history) == 10:
                     

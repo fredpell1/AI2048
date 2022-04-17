@@ -1,13 +1,10 @@
 """All the functions to train the model sequentially, test it or play the game"""
 
-from time import sleep, time
-import random
-import tkinter
+
 import neat
 import pickle 
 from pathlib import Path
 import sys
-import os
 import fitness_function
 
 #this is a bad way to do this, I should fix it later
