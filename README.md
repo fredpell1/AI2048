@@ -31,12 +31,14 @@ Using the function in either parallel training or sequential training, you can m
 
 ## Performance
  
-After training for only 10 generations, the model achieves average performance and can reach a tile of 256. 
+After training for only 20 generations, the model achieves average performance and can reach a tile of 256. 
 
 ## Potential next steps
 
 - Add some command line input
 - refactor the sequential training and parallel training files to remove duplicate codes in both
+- train the model for more than 20 generations
+- compare different reward functions, neat parameters
 
 ## Dependencies
 
