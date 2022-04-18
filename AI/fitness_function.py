@@ -70,11 +70,11 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
                 output = net.activate(flatten_grid)
                 
                 move = output.index(max(output))
-
-
+                
+                
                 #do a random move if the AI is stuck in making a move that doesn't modify the board
                 if all(x == 0 for x in score_history) and len(score_history) == 10:
-                    
+                    fitness -= 1
                     move = random.randint(0,3)
                 
                 if move == 0:
@@ -93,7 +93,7 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
                     print("something's wrong") #shouldnt happen
                 
                 num_move += 1
-                if len(score_history) > 10:
+                if len(score_history) >= 10:
                     score_history.pop(0)      
                         
                 if time_delay: sleep(0.1)
@@ -109,10 +109,12 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
                 if num_move > max_move: running = False
 
                 fitness += reward_function(score, old_score, game.matrix)
+                
                 score_history.append(score - old_score)
                 
         except tkinter.TclError:
             running = False
     
+    game.destroy()
     return fitness
 

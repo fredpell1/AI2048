@@ -28,7 +28,7 @@ def test_ai(config_file, best_file='winner.pickle'):
 def main():
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config.txt')
-    test_ai(config_path)
+    test_ai(config_path, 'best_increasing_greedy.pickle')
 
 
 

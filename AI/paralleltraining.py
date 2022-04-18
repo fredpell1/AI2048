@@ -18,7 +18,7 @@ import logic, puzzle, constants
 def eval_genome_increasing_greedy(genome, config):
     net = neat.nn.FeedForwardNetwork.create(genome, config)
     game = puzzle.GameGrid()
-
+    game.reset()
     return fitness_function.play_game(game, net, reward_function=fitness_function.increasing_row_col_greedy_fitness)
     
 
@@ -40,8 +40,8 @@ def eval_genome_greedy(genome, config):
     return fitness / 3
 
 
-def train(config_file, checkpoint='0', generations=40, processors = multiprocessing.cpu_count(), folder = 'checkpoints',
-        winner_file = 'best.pickle', eval_function = eval_genome_greedy, generation_interval=10):
+def train(config_file, checkpoint='0', generations=10, processors = multiprocessing.cpu_count(), folder = 'checkpoints',
+        winner_file = 'best.pickle', eval_function = eval_genome_greedy, generation_interval=1):
     """Train the AI from checkpoint to the number of generations given"""
 
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
