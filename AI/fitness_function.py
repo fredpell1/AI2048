@@ -114,7 +114,7 @@ def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = Fal
                 
         except tkinter.TclError:
             running = False
-    
+    game.one_loop()
     game.destroy()
     return fitness
 
