@@ -48,7 +48,7 @@ def increasing_row_col_greedy_fitness(score, old_score, matrix):
 
 
 
-def play_game(game: puzzle.GameGrid, net=None, max_move = 1000, time_delay = False, reward_function = greedy_fitness, 
+def play_game(game: puzzle.GameGrid, net=None, max_move = 1200, time_delay = False, reward_function = greedy_fitness, 
     normalize = True):
 
     """Play one game of 2048 with the neural net as the player"""
