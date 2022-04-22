@@ -6,7 +6,7 @@ import multiprocessing
 import neat
 from pathlib import Path
 import sys
-import fitness_function
+from . import fitness_function
 #this is a bad way to do this, I should fix it later
 PARENTPATH = str(Path(__file__).parent.parent)
 sys.path.append(PARENTPATH + "/2048-python")

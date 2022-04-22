@@ -5,7 +5,7 @@ import neat
 import pickle 
 from pathlib import Path
 import sys
-import fitness_function
+from . import fitness_function
 
 #this is a bad way to do this, I should fix it later
 PARENTPATH = str(Path(__file__).parent.parent)
@@ -32,7 +32,7 @@ def eval_genomes(genomes, config):
 
 
 def train_ai(config_file, checkpoint = '0', generations = 100, folder = 'checkpoints',
-        winner_file = 'best.pickle', eval_function = eval_genomes, generation_interval=10):
+        winner_file = 'best/best.pickle', eval_function = eval_genomes, generation_interval=10):
 
     """Train the population from checkpoint during the given number of generations"""
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
