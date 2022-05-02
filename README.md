@@ -35,9 +35,9 @@ After training for only 20 generations, the model achieves average performance a
 
 ## Potential next steps
 
-- Add some command line input
+- Improve user input error handling
 - refactor the sequential training and parallel training files to remove duplicate codes in both
-- train the model for more than 20 generations
+- train the model for more generations
 - compare different reward functions, neat parameters
 
 ## Dependencies
