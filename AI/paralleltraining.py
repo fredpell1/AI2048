@@ -6,7 +6,7 @@ import multiprocessing
 import neat
 from pathlib import Path
 import sys
-import fitness_function
+from . import fitness_function
 #this is a bad way to do this, I should fix it later
 PARENTPATH = str(Path(__file__).parent.parent)
 sys.path.append(PARENTPATH + "/2048-python")
@@ -41,7 +41,7 @@ def eval_genome_greedy(genome, config):
 
 
 def train(config_file, checkpoint='0', generations=10, processors = multiprocessing.cpu_count(), folder = 'checkpoints',
-        winner_file = 'best.pickle', eval_function = eval_genome_greedy, generation_interval=1):
+        winner_file = 'best/best_increasing_greedy.pickle', eval_function = eval_genome_increasing_greedy, generation_interval=1):
     """Train the AI from checkpoint to the number of generations given"""
 
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
